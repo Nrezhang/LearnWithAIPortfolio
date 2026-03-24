@@ -1,33 +1,52 @@
-https://www.notion.so/Product-Reqs-32c59cf5ddc980759534c9c1beaa57bc?source=copy_link
+# Project Name
 
-## Frontend
+## Tech Stack
+
+- **Frontend:** Next.js (App Router), React, TypeScript, Tailwind CSS
+- **Backend:** FastAPI (Python), Uvicorn
+
+## File Structure
+
+### Frontend
+
+```
 app/
-  layout.tsx                        ← root layout (sidebar + body wrapper)
-  globals.css                       ← tailwind directives
-  page.tsx                          ← / dashboard
-  learn/[subject]/page.tsx          ← /learn/system-design + /learn/algorithms
-  calendar/page.tsx                 ← /calendar
-  about/page.tsx                    ← /about
+├── layout.tsx                        # Root layout (sidebar + body wrapper)
+├── globals.css                       # Tailwind directives
+├── page.tsx                          # / (dashboard)
+├── learn/[subject]/page.tsx          # /learn/system-design, /learn/algorithms
+├── calendar/page.tsx                 # /calendar
+└── about/page.tsx                    # /about
 
 components/
-  layout/Sidebar.tsx                ← shared nav (used by layout.tsx)
-  dashboard/SubjectCard.tsx
-  dashboard/RecentSessions.tsx
-  learn/ChatInterface.tsx
-  learn/SuggestedPrompts.tsx
-  about/ProfileHeader.tsx
-  about/SkillsSection.tsx
-  about/ExperienceSection.tsx
-  about/AskAIWidget.tsx
+├── layout/
+│   └── Sidebar.tsx                   # Shared nav (used by layout.tsx)
+├── dashboard/
+│   ├── SubjectCard.tsx
+│   └── RecentSessions.tsx
+├── learn/
+│   ├── ChatInterface.tsx
+│   └── SuggestedPrompts.tsx
+└── about/
+    ├── ProfileHeader.tsx
+    ├── SkillsSection.tsx
+    ├── ExperienceSection.tsx
+    └── AskAIWidget.tsx
 
-lib/data.ts                         ← all mock data + constants
-types/index.ts                      ← shared TypeScript types
+lib/
+└── data.ts                           # Mock data + constants
 
-## Backend
+types/
+└── index.ts                          # Shared TypeScript types
+```
 
-FastAPI 
+### Backend
+
+```
+# FastAPI server
 uvicorn main:app --reload
+```
 
+## TODO
 
-## TODO:
-hardcoded about section info needs to be fetched from central repo in backend
+- [ ] Fetch About section info from central backend repo (currently hardcoded)
