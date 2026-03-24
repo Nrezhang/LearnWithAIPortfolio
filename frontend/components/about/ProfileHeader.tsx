@@ -1,15 +1,18 @@
-"use client";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000";
 
-const profile = {
-  name: "Alex Johnson",
-  title: "Software Engineer",
-  bio: "I'm a software engineer passionate about building scalable systems and writing clean, efficient code. I enjoy diving deep into distributed systems, algorithms, and system design — and I'm always learning.",
-  sessionsDone: 4,
-  hoursLearned: 4,
+interface Profile {
+  name: string;
+  title: string;
+  bio: string;
+  sessionsDone: number;
+  hoursLearned: number;
   avatar: "🧑‍💻",
 };
 
-export default function ProfileHeader() {
+export default async function ProfileHeader() {
+  const res = await fetch(`${API_BASE_URL}/api/about/info`);
+  const profile: Profile = await res.json();
+
   return (
     <div className="flex items-start gap-6 mb-10">
       {/* Avatar */}
