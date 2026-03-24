@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from services.about_service import get_skills, get_about_info, get_experience, get_education
+from services.about_service import get_skills, get_about_info, get_experience, get_education, get_projects
 
 router = APIRouter(prefix="/api/about")
 
@@ -18,3 +18,7 @@ async def experience():
 @router.get("/education")
 async def education():
     return get_education()
+
+@router.get("/projects")
+async def projects():
+    return get_projects()

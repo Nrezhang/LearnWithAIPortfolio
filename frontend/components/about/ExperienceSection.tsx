@@ -13,9 +13,12 @@ export default async function ExperienceSection() {
 
   return (
     <div className="mb-10">
-      <h2 className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-4">
-        Experience
-      </h2>
+            <div className="flex items-center gap-3 mb-4">
+                <h2 className="text-xs font-semibold uppercase tracking-widest text-gray-400">
+                    Experience
+                </h2>
+                <div className="flex-1 h-px bg-gray-200" />
+            </div>
 
       <div className="space-y-6">
         {experience.map((job) => (

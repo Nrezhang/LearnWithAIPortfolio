@@ -15,29 +15,34 @@ def get_experience():
     ]
     return experience
 
-def get_education():
-    education = [
-        {
-            "institution": "University of Technology",
-            "degree": "Bachelor of Science in Computer Science",
-            "duration": "2014 - 2018"
-        }
-    ]
-    return education
 
 def get_about_info():
     about_info = {
         "name": "John Doe",
         "title": "Software Engineer",
-        "sessionsDone": 10,
-        "hoursLearned": 20,
+        "linkedIn": "https://linkedin.com/in/henryszhang83",
+        "resume": "https://example.com/resume.pdf",
         "avatar": "🧑‍💻",
         "bio": "A passionate software engineer with experience in web development and a strong interest in AI.",
-        "experience": get_experience(),
-        "education": get_education()
     }
     
     return about_info
+def get_education():
+    education = [
+        {
+            "school": "NYU",
+            "year": "2025",
+            "details": "Bachelor of Science in Computer Science. Graduated with honors.",
+            "courses": ["Data Structures", "Algorithms", "Artificial Intelligence", "Machine Learning", "Web Development"]
+        },
+        {
+            "school": "TJHSST",
+            "year": "2021",
+            "details": "Completed various courses on AI, machine learning, and web development.",
+            "courses": ["Data Structures", "Algorithms", "Artificial Intelligence", "Machine Learning", "Web Development"]
+        }
+    ]
+    return education
 
 def get_skills():
     skills = [
@@ -63,3 +68,26 @@ def get_skills():
         },
     ]
     return skills
+
+def get_projects():
+    projects = [
+        {
+            "name": "AI-Powered Portfolio",
+            "description": "A personal portfolio website that uses AI to generate content and provide an interactive experience.",
+            "link": "https://github.com/yourname/ai-portfolio",
+            "tech": ["Next.js", "FastAPI", "OpenAI API"]
+        },
+        {
+            "name": "Recommender System",
+            "description": "A hybrid recommendation system that combines collaborative filtering and sequential modeling.",
+            "link": "https://github.com/yourname/recommender",
+            "tech": ["Python", "PyTorch", "MovieLens"]
+        },
+        {
+            "name": "ETL Analytics Pipeline",
+            "description": "Data pipeline from MongoDB to BigQuery with dashboards.",
+            "link": "https://github.com/yourname/etl-pipeline",
+            "tech": ["AWS", "BigQuery", "MongoDB"]
+        }
+    ]
+    return projects

@@ -32,14 +32,17 @@ export default async function SkillsSection() {
 
   return (
     <div className="mb-10">
-      <h2 className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-4">
-        Skills
-      </h2>
+            <div className="flex items-center gap-3 mb-4">
+                <h2 className="text-xs font-semibold uppercase tracking-widest text-gray-400">
+                    Skills
+                </h2>
+                <div className="flex-1 h-px bg-gray-200" />
+            </div>
 
       <div className="space-y-3">
         {skills.map(({ category, items }) => (
           <div key={category} className="flex items-start gap-4">
-            <span className="text-sm text-gray-400 w-28 flex-shrink-0 pt-1">
+            <span className="text-sm text-gray-400 w-28 shrink-0 pt-1">
               {category}
             </span>
             <div className="flex flex-wrap gap-2">

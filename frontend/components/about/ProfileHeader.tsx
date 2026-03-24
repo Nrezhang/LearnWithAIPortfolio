@@ -4,8 +4,8 @@ interface Profile {
   name: string;
   title: string;
   bio: string;
-  sessionsDone: number;
-  hoursLearned: number;
+  linkedIn: string;
+  resume: string;
   avatar: "🧑‍💻",
 };
 
@@ -16,7 +16,7 @@ export default async function ProfileHeader() {
   return (
     <div className="flex items-start gap-6 mb-10">
       {/* Avatar */}
-      <div className="w-20 h-20 rounded-2xl bg-purple-100 flex items-center justify-center text-4xl flex-shrink-0">
+      <div className="w-20 h-20 rounded-2xl bg-purple-100 flex items-center justify-center text-4xl shrink-0">
         {profile.avatar}
       </div>
 
@@ -28,17 +28,26 @@ export default async function ProfileHeader() {
           {profile.bio}
         </p>
 
-        {/* Stats */}
-        <div className="flex gap-6 mt-3">
-          <span className="text-sm text-gray-700">
-            <strong>{profile.sessionsDone}</strong>{" "}
-            <span className="text-gray-400">sessions done</span>
-          </span>
-          <span className="text-sm text-gray-700">
-            <strong>{profile.hoursLearned}h</strong>{" "}
-            <span className="text-gray-400">learned</span>
-          </span>
-        </div>
+        {/* Actions */}
+          <div className="flex gap-3 mt-4">
+            <a
+              href={profile.linkedIn}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2 text-sm font-medium rounded-lg bg-purple-100 text-purple-600 hover:bg-purple-600 transition"
+            >
+              LinkedIn
+            </a>
+
+            <a
+              href={profile.resume}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2 text-sm font-medium rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition"
+            >
+              Resume
+            </a>
+          </div>
       </div>
     </div>
   );
