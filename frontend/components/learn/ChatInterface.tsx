@@ -1,14 +1,20 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import type { SubjectConfig } from "@/types";
-import { Globe, Code2, Send, Sparkles } from "lucide-react";
-import SuggestedPrompts from "./SuggestedPrompts";
+import type {
+  SubjectConfig,
+  Topic,
+  Mode,
+  SessionPhase,
+  ChatMessage,
+  Feedback,
+} from "@/types";
+import { Globe, Code2, Send, Sparkles, BookOpen, Mic } from "lucide-react";
+import TopicSelector from "./SuggestedTopics";
+import ModeSelector from "./ModeSelect";
+import ScoreCard from "./score";
 
-interface Message {
-  role: "user" | "assistant";
-  content: string;
-}
+const INTERVIEW_MESSAGE_LIMIT = 5;
 
 const iconMap = {
   "system-design": Globe,
@@ -16,26 +22,24 @@ const iconMap = {
 };
 
 const colorMap = {
-  purple: {
-    header: "text-purple-600",
-    iconBg: "bg-purple-100",
-    icon: "text-purple-600",
-    sendBtn: "bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-200",
-  },
-  green: {
-    header: "text-green-600",
-    iconBg: "bg-green-100",
-    icon: "text-green-600",
-    sendBtn: "bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-200",
-  },
+  purple: { iconBg: "bg-purple-100", icon: "text-purple-600" },
+  green: { iconBg: "bg-green-100", icon: "text-green-600" },
 };
 
 export default function ChatInterface({ subject }: { subject: SubjectConfig }) {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [phase, setPhase] = useState<SessionPhase>("topic-select");
+  const [topic, setTopic] = useState<Topic | null>(null);
+  const [mode, setMode] = useState<Mode | null>(null);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [aiMessageCount, setAiMessageCount] = useState(0);
+  const [score, setScore] = useState<Feedback | null>(null);
+
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  // const requestIDRef = useRef(0);
 
   const Icon = iconMap[subject.id];
   const colors = colorMap[subject.color];
@@ -44,32 +48,118 @@ export default function ChatInterface({ subject }: { subject: SubjectConfig }) {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
+  // ─── Navigation handlers ──────────────────────────────────────────────────
+
+  const handleTopicSelect = (t: Topic) => {
+    setTopic(t);
+    setPhase("mode-select");
+  };
+
+  const handleModeSelect = (m: Mode) => {
+    setMode(m);
+    setPhase("chatting");
+  };
+
+  const handleRestart = () => {
+    setPhase("topic-select");
+    setTopic(null);
+    setMode(null);
+    setMessages([]);
+    setAiMessageCount(0);
+    setScore(null);
+    setError(null);
+  };
+
+  // ─── Send message ─────────────────────────────────────────────────────────
+
   const sendMessage = async (text?: string) => {
     const content = (text ?? input).trim();
     if (!content || loading) return;
+    if (phase === "topic-select") {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch("http://localhost:8000/learn/normalize-topic", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ input: content }),
+        });
 
-    setMessages((prev) => [...prev, { role: "user", content }]);
+        if (!res.ok) throw new Error("Failed to normalize topic");
+
+        const data = await res.json();
+        // TODO
+        /**
+         * Backend should:
+         * - take raw user input ("load balancing", "hash maps", etc.)
+         * - map it to a normalized Topic object:
+         *   {
+         *     id: string,
+         *     title: string,
+         *   }
+         */
+
+        const normalizedTopic: Topic = data.topic;
+
+        setTopic(normalizedTopic);
+        setPhase("mode-select");
+        setInput("");
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Failed to process topic",
+        );
+      } finally {
+        setLoading(false);
+      }
+
+      return;
+    }
+
+    if (!topic || !mode) return;
+
+    const newMessages: ChatMessage[] = [...messages, { role: "user", content }];
+    setMessages(newMessages);
     setInput("");
     setLoading(true);
+    setError(null);
 
-    // TODO: Replace with real API call to FastAPI backend
-    // const res = await fetch("/api/chat", {
-    //   method: "POST",
-    //   body: JSON.stringify({ subject: subject.id, message: content, history: messages }),
-    // });
-    // const data = await res.json();
-    // setMessages((prev) => [...prev, { role: "assistant", content: data.reply }]);
+    try {
+      const res = await fetch("http://localhost:8000/learn/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          subject: subject.id,
+          topic_id: topic.id,
+          topic_label: topic.title,
+          mode,
+          message: content,
+          history: messages, // send history before this new message
+          ai_message_count: aiMessageCount,
+        }),
+      });
 
-    await new Promise((r) => setTimeout(r, 900));
-    setMessages((prev) => [
-      ...prev,
-      {
-        role: "assistant",
-        content: `This is a placeholder response for "${content}". Connect your FastAPI backend to get real answers about ${subject.label}.`,
-      },
-    ]);
-    setLoading(false);
-    inputRef.current?.focus();
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.detail ?? "Something went wrong");
+      }
+
+      const data = await res.json();
+      const newCount = aiMessageCount + 1;
+
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: data.reply },
+      ]);
+      setAiMessageCount(newCount);
+
+      if (data.score) {
+        setScore(data.score);
+        setPhase("review");
+      }
+    } finally {
+      setLoading(false);
+      inputRef.current?.focus();
+    }
   };
 
   const handleKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -79,53 +169,115 @@ export default function ChatInterface({ subject }: { subject: SubjectConfig }) {
     }
   };
 
+  const isFinalMessage =
+    mode === "interview" && aiMessageCount >= INTERVIEW_MESSAGE_LIMIT - 1;
+
+  // ─── Render ───────────────────────────────────────────────────────────────
+
   return (
     <div className="flex flex-col h-screen">
       {/* Page header */}
-      <div className="flex items-center gap-3 px-8 py-5 border-b border-gray-100 bg-white shrink-0">
-        <div className={`w-9 h-9 ${colors.iconBg} rounded-xl flex items-center justify-center`}>
-          <Icon className={`w-5 h-5 ${colors.icon}`} />
+      <div className="flex items-center justify-between px-8 py-5 border-b border-gray-100 bg-white shrink-0">
+        <div className="flex items-center gap-3">
+          <div
+            className={`w-9 h-9 ${colors.iconBg} rounded-xl flex items-center justify-center`}
+          >
+            <Icon className={`w-5 h-5 ${colors.icon}`} />
+          </div>
+          <div>
+            <h1 className="font-semibold text-gray-900">{subject.label}</h1>
+            {topic && (
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className="text-xs text-gray-400">{topic.title}</span>
+                {mode && (
+                  <>
+                    <span className="text-gray-200">·</span>
+                    <span className="inline-flex items-center gap-1 text-xs font-medium text-indigo-500">
+                      {mode === "learn" ? (
+                        <>
+                          <BookOpen className="w-3 h-3" /> Learn
+                        </>
+                      ) : (
+                        <>
+                          <Mic className="w-3 h-3" /> Interview
+                        </>
+                      )}
+                    </span>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
         </div>
-        <div>
-          <h1 className="font-semibold text-gray-900">{subject.label}</h1>
-          <p className="text-xs text-gray-400">
-            {subject.id === "system-design"
-              ? "Master distributed systems and architecture patterns"
-              : "Sharpen your problem-solving with algorithms"}
-          </p>
-        </div>
+
+        {/* Interview progress */}
+        {mode === "interview" && phase === "chatting" && (
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-400">
+              {aiMessageCount}/{INTERVIEW_MESSAGE_LIMIT}
+            </span>
+            <div className="flex gap-1">
+              {Array.from({ length: INTERVIEW_MESSAGE_LIMIT }).map((_, i) => (
+                <div
+                  key={i}
+                  className={`w-2 h-2 rounded-full transition-colors ${
+                    i < aiMessageCount ? "bg-indigo-500" : "bg-gray-200"
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-8 py-6 space-y-4">
-        {messages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full gap-6 text-center">
+      {/* Body */}
+      <div className="flex-1 overflow-y-auto px-8 py-6">
+        {/* Topic select */}
+        {phase === "topic-select" && (
+          <div className="flex flex-col items-center justify-center min-h-full gap-6">
             <div className="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center">
               <Sparkles className="w-7 h-7 text-indigo-500" />
             </div>
-            <div>
+            <div className="text-center">
               <h2 className="text-xl font-semibold text-gray-900 mb-1">
-                What would you like to learn?
+                What would you like to study?
               </h2>
-              <p className="text-sm text-gray-400 max-w-sm">
-                Ask me anything about {subject.label.toLowerCase()}. I&apos;ll explain
-                concepts, walk through designs, and test your knowledge.
+              <p className="text-sm text-gray-400">
+                Pick a topic to get started with {subject.label}.
               </p>
             </div>
-            <SuggestedPrompts
-              prompts={subject.suggestedPrompts}
-              onSelect={sendMessage}
+            <TopicSelector subject={subject} onSelect={handleTopicSelect} />
+          </div>
+        )}
+
+        {/* Mode select */}
+        {phase === "mode-select" && topic && (
+          <div className="flex flex-col items-center justify-center min-h-full gap-6">
+            <ModeSelector
+              topic={topic}
+              onSelect={handleModeSelect}
+              onBack={() => setPhase("topic-select")}
             />
           </div>
-        ) : (
-          <>
+        )}
+
+        {/* Chat */}
+        {phase === "chatting" && (
+          <div className="space-y-4 max-w-2xl mx-auto">
+            {messages.length === 0 && (
+              <div className="text-center py-8 text-sm text-gray-400">
+                {mode === "learn"
+                  ? "Start by explaining what you already know about this topic."
+                  : "I'll give you a problem to design. Type anything to begin."}
+              </div>
+            )}
             {messages.map((msg, i) => (
               <div
                 key={i}
                 className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
               >
                 <div
-                  className={`max-w-2xl px-4 py-3 rounded-2xl text-sm leading-relaxed ${
+                  className={`max-w-2xl px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${
                     msg.role === "user"
                       ? "bg-indigo-600 text-white rounded-br-sm"
                       : "bg-white border border-gray-100 text-gray-800 rounded-bl-sm"
@@ -142,32 +294,56 @@ export default function ChatInterface({ subject }: { subject: SubjectConfig }) {
                 </div>
               </div>
             )}
+            {error && (
+              <p className="text-xs text-red-400 text-center">{error}</p>
+            )}
             <div ref={bottomRef} />
-          </>
+          </div>
+        )}
+
+        {/* Score */}
+        {phase === "review" && score && topic && (
+          <div className="flex flex-col items-center justify-center min-h-full gap-4">
+            {/* Show the last AI message above score */}
+            {messages.length > 0 &&
+              messages[messages.length - 1].role === "assistant" && (
+                <div className="w-full max-w-md bg-white border border-gray-100 rounded-2xl px-4 py-3 text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
+                  {messages[messages.length - 1].content}
+                </div>
+              )}
+            <ScoreCard score={score} topic={topic} onRestart={handleRestart} />
+          </div>
         )}
       </div>
 
-      {/* Input bar */}
-      <div className="shrink-0 px-8 py-4 border-t border-gray-100 bg-white">
-        <div className="flex items-center gap-3 bg-gray-50 rounded-2xl px-4 py-2.5">
-          <input
-            ref={inputRef}
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKey}
-            placeholder={`Ask about ${subject.label.toLowerCase()}...`}
-            className="flex-1 text-sm bg-transparent outline-none placeholder-gray-400 text-gray-800"
-          />
-          <button
-            onClick={() => sendMessage()}
-            disabled={!input.trim() || loading}
-            className={`w-8 h-8 flex items-center justify-center rounded-xl text-white transition-colors ${colors.sendBtn}`}
-          >
-            <Send className="w-4 h-4" />
-          </button>
+      {/* Input bar — only visible during chat */}
+      {(phase === "chatting" || phase === "topic-select") && (
+        <div className="shrink-0 px-8 py-4 border-t border-gray-100 bg-white">
+          {isFinalMessage && (
+            <p className="text-xs text-amber-500 text-center mb-2">
+              This is your last response — the interview will end after this.
+            </p>
+          )}
+          <div className="flex items-center gap-3 bg-gray-50 rounded-2xl px-4 py-2.5 max-w-2xl mx-auto">
+            <input
+              ref={inputRef}
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKey}
+              placeholder={"Type your message here..."}
+              className="flex-1 text-sm bg-transparent outline-none placeholder-gray-400 text-gray-800"
+            />
+            <button
+              onClick={() => sendMessage()}
+              disabled={!input.trim() || loading}
+              className="w-8 h-8 flex items-center justify-center rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-40 transition-colors"
+            >
+              <Send className="w-4 h-4" />
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

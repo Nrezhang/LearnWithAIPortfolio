@@ -6,13 +6,17 @@ export const SUBJECTS: SubjectConfig[] = [
     label: "System Design",
     description: "Distributed systems, databases, caching, and architecture.",
     color: "purple",
-    suggestedPrompts: [
-      "Explain load balancers and when to use them",
-      "How does database sharding work?",
-      "Design a URL shortener like bit.ly",
-      "What is the CAP theorem?",
-      "Design a real-time chat system",
-      "Explain microservices vs monolith",
+    suggestedTopics: [
+      { id: "load-balancers", title: "Load Balancers", description: "Distribute traffic across servers" },
+      { id: "database-sharding", title: "Database Sharding", description: "Horizontal DB partitioning" },
+      { id: "caching", title: "Caching Strategies", description: "Redis, CDN, cache invalidation" },
+      { id: "url-shortener", title: "URL Shortener", description: "Design bit.ly from scratch" },
+      { id: "rate-limiting", title: "Rate Limiting", description: "Throttle API requests at scale" },
+      { id: "cap-theorem", title: "CAP Theorem", description: "Consistency, availability, partition tolerance" },
+      { id: "message-queues", title: "Message Queues", description: "Kafka, RabbitMQ, async processing" },
+      { id: "microservices", title: "Microservices", description: "vs monolith, service discovery" },
+      { id: "cdn", title: "CDN Design", description: "Content delivery at a global scale" },
+      { id: "chat-system", title: "Chat System", description: "Real-time messaging architecture" },
     ],
   },
   {
@@ -20,13 +24,17 @@ export const SUBJECTS: SubjectConfig[] = [
     label: "Algorithms",
     description: "Sorting, graphs, dynamic programming, and complexity.",
     color: "green",
-    suggestedPrompts: [
-      "Explain binary search and its time complexity",
-      "How does BFS differ from DFS?",
-      "What is dynamic programming?",
-      "Walk me through merge sort",
-      "Explain Big O notation",
-      "What are common graph algorithms?",
+    suggestedTopics: [
+      { id: "binary-search", title: "Binary Search", description: "Search in O(log n) time" },
+      { id: "dynamic-programming", title: "Dynamic Programming", description: "Memoization and tabulation" },
+      { id: "graph-traversal", title: "Graph Traversal", description: "BFS, DFS, and applications" },
+      { id: "sorting", title: "Sorting Algorithms", description: "Merge sort, quicksort, heapsort" },
+      { id: "trees", title: "Trees & BSTs", description: "Traversals, balancing, operations" },
+      { id: "sliding-window", title: "Sliding Window", description: "Efficient subarray problems" },
+      { id: "two-pointers", title: "Two Pointers", description: "In-place array techniques" },
+      { id: "recursion", title: "Recursion & Backtracking", description: "Recursive thinking patterns" },
+      { id: "heaps", title: "Heaps & Priority Queues", description: "Min/max heap operations" },
+      { id: "big-o", title: "Big O Notation", description: "Time and space complexity" },
     ],
   },
 ];
@@ -38,6 +46,7 @@ export const SESSIONS: Session[] = [
     subject: "system-design",
     date: "2026-03-22",
     status: "completed",
+    mode: "learn",
   },
   {
     id: "2",
@@ -45,6 +54,13 @@ export const SESSIONS: Session[] = [
     subject: "algorithms",
     date: "2026-03-21",
     status: "completed",
+    mode: "interview",
+    score: {
+      understanding: 8,
+      coverage: 6,
+      communication: 7,
+      summary: "Good understanding of the algorithm but struggled with edge cases.",
+    },
   },
   {
     id: "3",
@@ -52,6 +68,7 @@ export const SESSIONS: Session[] = [
     subject: "system-design",
     date: "2026-03-20",
     status: "in-progress",
+    mode: "learn",
   },
   {
     id: "4",
@@ -59,6 +76,7 @@ export const SESSIONS: Session[] = [
     subject: "algorithms",
     date: "2026-03-18",
     status: "completed",
+    mode: "learn",
   },
   {
     id: "5",
@@ -73,6 +91,13 @@ export const SESSIONS: Session[] = [
     subject: "algorithms",
     date: "2026-03-15",
     status: "completed",
+    mode: "interview",
+    score: {
+      understanding: 7,
+      coverage: 8,
+      communication: 9,
+      summary: "Strong communication and grasp of BFS/DFS tradeoffs.",
+    },
   },
   {
     id: "7",
