@@ -25,7 +25,7 @@ export default async function EducationSection() {
             
         {edu.map((ed) => (
             <div key={ed.school} className="text-sm text-gray-600">
-            <span className="text-sm text-gray-400 w-28 flex-shrink-0 pt-1">
+            <span className="text-sm text-gray-400 w-28 shrink-0 pt-1">
                 {ed.school}
             </span>
             <span className="text-gray-400">

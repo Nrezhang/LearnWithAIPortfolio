@@ -79,7 +79,7 @@ export default function AskAIWidget() {
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 min-h-[160px] max-h-72">
+          <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 min-h-40 max-h-72">
             {messages.length === 0 && (
               <p className="text-xs text-gray-400 text-center mt-4">
                 Ask anything about skills, experience, or projects.
