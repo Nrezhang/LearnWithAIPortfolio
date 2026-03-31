@@ -43,6 +43,13 @@ types/
 ### Backend
 
 ```
+routes/
+└── about.py                
+services/
+└──about_service.py
+main.py
+
+```
 # FastAPI server
 uvicorn main:app --reload
 ```
@@ -50,3 +57,4 @@ uvicorn main:app --reload
 ## TODO
 
 - [ ] Fetch About section info from central backend repo (currently hardcoded)
+- [ ] handle race conditions in chat

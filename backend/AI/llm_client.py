@@ -16,6 +16,7 @@ def get_ai_response(messages, model="abacusai/dracarys-llama-3.1-70b-instruct", 
     #         "content": "Write code to select rows from the dataframe `df` having the maximum `temp` for each `city`."
     #     }
     # ]
+    #returns a dict with "content" and "tokens" keys
     payload = {
     "model": model,
     "max_tokens": max_tokens,

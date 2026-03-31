@@ -13,6 +13,7 @@ import { Globe, Code2, Send, Sparkles, BookOpen, Mic } from "lucide-react";
 import TopicSelector from "./SuggestedTopics";
 import ModeSelector from "./ModeSelect";
 import ScoreCard from "./score";
+import { API_BASE_URL } from "@/lib/config";
 
 const INTERVIEW_MESSAGE_LIMIT = 5;
 
@@ -79,7 +80,7 @@ export default function ChatInterface({ subject }: { subject: SubjectConfig }) {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch("http://localhost:8000/learn/normalize-topic", {
+        const res = await fetch(`${API_BASE_URL}/api/chat/normalize-topic`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ input: content }),
@@ -88,18 +89,11 @@ export default function ChatInterface({ subject }: { subject: SubjectConfig }) {
         if (!res.ok) throw new Error("Failed to normalize topic");
 
         const data = await res.json();
-        // TODO
-        /**
-         * Backend should:
-         * - take raw user input ("load balancing", "hash maps", etc.)
-         * - map it to a normalized Topic object:
-         *   {
-         *     id: string,
-         *     title: string,
-         *   }
-         */
+            const normalizedTopic: Topic = data.topic ?? data;
 
-        const normalizedTopic: Topic = data.topic;
+            if (!normalizedTopic?.id || !normalizedTopic?.title) {
+              throw new Error("Invalid normalized topic returned");
+            }
 
         setTopic(normalizedTopic);
         setPhase("mode-select");
@@ -124,7 +118,7 @@ export default function ChatInterface({ subject }: { subject: SubjectConfig }) {
     setError(null);
 
     try {
-      const res = await fetch("http://localhost:8000/learn/chat", {
+      const res = await fetch(`${API_BASE_URL}/api/chat/interview`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -252,7 +246,7 @@ export default function ChatInterface({ subject }: { subject: SubjectConfig }) {
 
         {/* Mode select */}
         {phase === "mode-select" && topic && (
-          <div className="flex flex-col items-center justify-center min-h-full gap-6">
+          <div className="flex flex-col items-center justify-start min-h-full gap-6 pt-8">
             <ModeSelector
               topic={topic}
               onSelect={handleModeSelect}
