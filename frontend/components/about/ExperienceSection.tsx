@@ -3,6 +3,7 @@ interface Experience {
   period: string;
   role: string;
   company: string;
+  company_url: string;
   description: string;
 }
 
@@ -34,7 +35,14 @@ export default async function ExperienceSection() {
               <p className="text-xs text-gray-400 mb-0.5">{job.period}</p>
               <p className="text-sm font-semibold text-gray-900">
                 {job.role}{" "}
-                <span className="text-gray-400 font-normal">· {job.company}</span>
+                <span className="text-gray-400 font-normal">· <a
+                  href={job.company_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="border-b border-gray-400 hover:border-gray-600 transition"
+                >
+        {job.company}
+      </a></span>
               </p>
               <p className="text-sm text-gray-500 mt-1">{job.description}</p>
             </div>
