@@ -12,8 +12,9 @@ export default function AboutPage() {
         <ProfileHeader />
         <ExperienceSection />
         <EducationSection />
-        <SkillsSection />
         <ProjectsSection />
+        <SkillsSection />
+        
       </div>
       <AskAIWidget />
     </div>

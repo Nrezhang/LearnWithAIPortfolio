@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>&ast;&ast;1&period; Overview&ast;&ast;</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+            
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-light">
+            <p>Here’s a structured <strong>workflow documentation</strong> for your learning tracking chat app. This will serve as a blueprint for development, ensuring clarity on what to code and how components interact.</p>
+<hr>
+<h2 id="1-overview"><strong>1. Overview</strong></h2>
+<p><strong>App Name:</strong> Learning Tracker (or your preferred name)
+<strong>Type:</strong> Full-stack chat application with LLM integration.
+<strong>Core Purpose:</strong> Help users learn topics via interactive chat sessions (Interview or Learn mode) and track progress.</p>
+<h3 id="key-features"><strong>Key Features:</strong></h3>
+<ul>
+<li>Topic selection (structured via LLM).</li>
+<li>Two modes: <strong>Interview</strong> (Q&amp;A with feedback) and <strong>Learn</strong> (free-form chat).</li>
+<li>Session logging (date, topic, performance metrics).</li>
+<li>Progress tracking (via logged sessions).</li>
+</ul>
+<hr>
+<h2 id="2-workflow-steps"><strong>2. Workflow Steps</strong></h2>
+<p><em>(High-level flow with inputs/outputs)</em></p>
+<table>
+<thead>
+<tr>
+<th><strong>Step</strong></th>
+<th><strong>Action</strong></th>
+<th><strong>Input</strong></th>
+<th><strong>Output</strong></th>
+<th><strong>Component Responsible</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Topic Selection</td>
+<td>User selects/enters a topic.</td>
+<td>Topic text (e.g., &quot;Python OOP&quot;)</td>
+<td>Structured topic data (JSON)</td>
+<td>Frontend → Backend → LLM API</td>
+</tr>
+<tr>
+<td>2. Mode Selection</td>
+<td>User picks Interview or Learn mode.</td>
+<td>Mode choice (Interview/Learn)</td>
+<td>Confirmed mode</td>
+<td>Frontend → Backend</td>
+</tr>
+<tr>
+<td>3. Session Execution</td>
+<td>- <strong>Interview Mode:</strong> Backend generates questions; user answers; feedback given.<br>- <strong>Learn Mode:</strong> Free-form chat.</td>
+<td>User answers/questions</td>
+<td>Chat responses, feedback (Interview)</td>
+<td>Backend (LLM for responses)</td>
+</tr>
+<tr>
+<td>4. Session End</td>
+<td>Session ends (auto or manual).</td>
+<td>Session data (topic, answers, etc.)</td>
+<td>Logged session data</td>
+<td>Backend → Database</td>
+</tr>
+<tr>
+<td>5. Repeat</td>
+<td>User starts a new session.</td>
+<td>-</td>
+<td>-</td>
+<td>Frontend/Backend</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="3-detailed-workflow-breakdown"><strong>3. Detailed Workflow Breakdown</strong></h2>
+<h3 id="step-1-topic-selection"><strong>Step 1: Topic Selection</strong></h3>
+<p><strong>Goal:</strong> Convert user’s natural language topic into a structured format.</p>
+<h4 id="frontend"><strong>Frontend:</strong></h4>
+<ul>
+<li><strong>UI Elements:</strong>
+<ul>
+<li>Searchable topic list (predefined topics).</li>
+<li>Input field for custom topics.</li>
+<li>&quot;Next&quot; button to submit.</li>
+</ul>
+</li>
+<li><strong>Logic:</strong>
+<ul>
+<li>If user selects a predefined topic → send <code>topic_id</code> to backend.</li>
+<li>If user types a custom topic → send raw text to backend.</li>
+</ul>
+</li>
+</ul>
+<h4 id="backend"><strong>Backend:</strong></h4>
+<ul>
+<li><strong>Endpoint:</strong> <code>POST /api/topics/process</code>
+<ul>
+<li><strong>Input:</strong> Raw topic text (e.g., <code>&quot;How to use Python decorators&quot;</code>).</li>
+<li><strong>Process:</strong>
+<ol>
+<li>Call LLM API (e.g., OpenAI, Anthropic) with prompt:<pre><code>&quot;Convert the following natural language topic into a structured format with:
+- topic_name: 'Python Decorators'
+- subtopics: ['Basics', 'Use Cases', 'Advanced Patterns']
+- difficulty: 'Intermediate'
+- tags: ['python', 'functions']
+Topic: {user_input}&quot;
+</code></pre>
+</li>
+<li>Receive structured data (JSON) from LLM.</li>
+<li>Store structured topic in DB (if new) or fetch existing.</li>
+<li>Return structured topic to frontend.</li>
+</ol>
+</li>
+<li><strong>Output:</strong> Structured topic JSON (e.g., <code>{topic_id: &quot;123&quot;, name: &quot;Python Decorators&quot;, ...}</code>).</li>
+</ul>
+</li>
+</ul>
+<h4 id="llm-api"><strong>LLM API:</strong></h4>
+<ul>
+<li><strong>Example Response:</strong><pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;topic_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;123&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Python Decorators&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;subtopics&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;Basics&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-string">&quot;Use Cases&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-string">&quot;Advanced Patterns&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;difficulty&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Intermediate&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;tags&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;python&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-string">&quot;functions&quot;</span><span class="hljs-punctuation">]</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+</li>
+</ul>
+<h4 id="error-handling"><strong>Error Handling:</strong></h4>
+<ul>
+<li>If LLM API fails → Frontend shows error: &quot;Couldn’t process topic. Try rephrasing.&quot;</li>
+<li>If topic is too vague → Backend prompts user: &quot;Be more specific (e.g., 'Python decorators for logging').&quot;</li>
+</ul>
+<hr>
+<h3 id="step-2-mode-selection"><strong>Step 2: Mode Selection</strong></h3>
+<p><strong>Goal:</strong> Let user choose how they want to learn.</p>
+<h4 id="frontend-1"><strong>Frontend:</strong></h4>
+<ul>
+<li><strong>UI Elements:</strong>
+<ul>
+<li>Two buttons: <strong>&quot;Interview Mode&quot;</strong> (structured Q&amp;A) and <strong>&quot;Learn Mode&quot;</strong> (free-form chat).</li>
+<li>Brief descriptions of each mode.</li>
+</ul>
+</li>
+<li><strong>Logic:</strong>
+<ul>
+<li>Send selected mode to backend: <code>POST /api/sessions/start</code> with <code>{mode: &quot;interview&quot;}</code>.</li>
+</ul>
+</li>
+</ul>
+<h4 id="backend-1"><strong>Backend:</strong></h4>
+<ul>
+<li><strong>Endpoint:</strong> <code>POST /api/sessions/start</code>
+<ul>
+<li><strong>Input:</strong> <code>{topic_id: &quot;123&quot;, mode: &quot;interview&quot;}</code>.</li>
+<li><strong>Process:</strong>
+<ol>
+<li>Create a new session in DB with <code>status: &quot;active&quot;</code>.</li>
+<li>Fetch topic data from DB.</li>
+<li>Return session ID and mode confirmation to frontend.</li>
+</ol>
+</li>
+<li><strong>Output:</strong> <code>{session_id: &quot;456&quot;, mode: &quot;interview&quot;, topic: {...}}</code>.</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="step-3-session-execution"><strong>Step 3: Session Execution</strong></h3>
+<p><em>(Two sub-flows: Interview vs. Learn)</em></p>
+<h4 id="a-interview-mode"><strong>A. Interview Mode</strong></h4>
+<p><strong>Goal:</strong> Simulate an interview with questions, follow-ups, and performance feedback.</p>
+<h5 id="frontend-2"><strong>Frontend:</strong></h5>
+<ul>
+<li><strong>UI Elements:</strong>
+<ul>
+<li>Chat interface showing:
+<ul>
+<li>Current question.</li>
+<li>User answer input field.</li>
+<li>&quot;Submit&quot; button.</li>
+<li>Optional: Timer, question counter.</li>
+</ul>
+</li>
+<li>&quot;End Session&quot; button.</li>
+</ul>
+</li>
+</ul>
+<h5 id="backend-2"><strong>Backend:</strong></h5>
+<ul>
+<li><strong>Endpoints:</strong>
+<ol>
+<li>
+<p><code>POST /api/sessions/{session_id}/next_question</code></p>
+<ul>
+<li><strong>Input:</strong> <code>{session_id: &quot;456&quot;, user_answer: &quot;...&quot;}</code> (for follow-ups).</li>
+<li><strong>Process:</strong>
+<ul>
+<li>Fetch topic data (subtopics, difficulty).</li>
+<li>Generate question using LLM (prompt: <em>&quot;Ask a follow-up question about [subtopic] based on the user’s last answer: [user_answer].&quot;</em>).</li>
+<li>Store question in DB linked to session.</li>
+</ul>
+</li>
+<li><strong>Output:</strong> <code>{question: &quot;How do decorators relate to closures in Python?&quot;, follow_up: true/false}</code>.</li>
+</ul>
+</li>
+<li>
+<p><code>POST /api/sessions/{session_id}/end</code></p>
+<ul>
+<li><strong>Input:</strong> <code>{session_id: &quot;456&quot;}</code>.</li>
+<li><strong>Process:</strong>
+<ul>
+<li>Mark session as <code>completed</code>.</li>
+<li>Generate feedback:
+<ul>
+<li>Compare user answers to expected answers (or use LLM to evaluate).</li>
+<li>Score in categories (e.g., Accuracy: 8/10, Clarity: 7/10).</li>
+</ul>
+</li>
+<li>Store feedback in DB.</li>
+</ul>
+</li>
+<li><strong>Output:</strong> <code>{feedback: {...}, scores: {...}}</code>.</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+<h5 id="llm-integration"><strong>LLM Integration:</strong></h5>
+<ul>
+<li><strong>Question Generation Prompt:</strong><pre><code>&quot;Generate a [difficulty]-level question about [subtopic] in [topic_name].
+Format: {question: '...', expected_answer: '...'}.
+Topic: Python Decorators, Subtopic: Basics, Difficulty: Intermediate&quot;
+</code></pre>
+</li>
+<li><strong>Feedback Generation Prompt:</strong><pre><code>&quot;Evaluate the user’s answers for [topic_name]:
+- Answers: [{answer: '...', correct: true/false}, ...]
+- Provide scores (0-10) for:
+  - Accuracy
+  - Clarity
+  - Depth
+Format: {scores: {...}, strengths: [...], improvements: [...]}
+Topic: Python Decorators&quot;
+</code></pre>
+</li>
+</ul>
+<h5 id="example-flow"><strong>Example Flow:</strong></h5>
+<ol>
+<li>Backend sends first question: <em>&quot;What is a decorator in Python?&quot;</em></li>
+<li>User answers: <em>&quot;A function that modifies another function.&quot;</em></li>
+<li>Backend generates follow-up: <em>&quot;Can you explain how the @ syntax works under the hood?&quot;</em></li>
+<li>After 5 questions (or user clicks &quot;End Session&quot;), backend generates feedback.</li>
+</ol>
+<hr>
+<h4 id="b-learn-mode"><strong>B. Learn Mode</strong></h4>
+<p><strong>Goal:</strong> Free-form chat to fill knowledge gaps.</p>
+<h5 id="frontend-3"><strong>Frontend:</strong></h5>
+<ul>
+<li><strong>UI Elements:</strong>
+<ul>
+<li>Chat interface with:
+<ul>
+<li>Message history.</li>
+<li>Input field for user questions.</li>
+<li>&quot;End Session&quot; button.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h5 id="backend-3"><strong>Backend:</strong></h5>
+<ul>
+<li><strong>Endpoints:</strong>
+<ol>
+<li>
+<p><code>POST /api/sessions/{session_id}/chat</code></p>
+<ul>
+<li><strong>Input:</strong> <code>{session_id: &quot;456&quot;, user_message: &quot;Explain decorators with an example.&quot;}</code></li>
+<li><strong>Process:</strong>
+<ul>
+<li>Use LLM to generate response (prompt: <em>&quot;Explain [topic_name] in simple terms. User asked: [user_message].&quot;</em>).</li>
+<li>Store message in DB.</li>
+</ul>
+</li>
+<li><strong>Output:</strong> <code>{response: &quot;Decorators are functions that take another function... Here’s an example: [code].&quot;}</code></li>
+</ul>
+</li>
+<li>
+<p><code>POST /api/sessions/{session_id}/end</code></p>
+<ul>
+<li><strong>Input:</strong> <code>{session_id: &quot;456&quot;}</code></li>
+<li><strong>Process:</strong>
+<ul>
+<li>Mark session as <code>completed</code>.</li>
+<li>Log session (no feedback needed).</li>
+</ul>
+</li>
+<li><strong>Output:</strong> <code>{status: &quot;completed&quot;}</code></li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+<hr>
+<h3 id="step-4-session-logging"><strong>Step 4: Session Logging</strong></h3>
+<p><strong>Goal:</strong> Persist session data for progress tracking.</p>
+<h4 id="backend-4"><strong>Backend:</strong></h4>
+<ul>
+<li><strong>Endpoint:</strong> <code>POST /api/sessions/{session_id}/log</code> (auto-called on session end).
+<ul>
+<li><strong>Input:</strong> <code>{session_id: &quot;456&quot;, mode: &quot;interview&quot;, topic_id: &quot;123&quot;, feedback: {...}, scores: {...}, duration_minutes: 15}</code></li>
+<li><strong>Process:</strong>
+<ol>
+<li>Update session in DB: <code>status: &quot;completed&quot;</code>, <code>ended_at: now()</code>.</li>
+<li>Store logs in <code>sessions</code> table.</li>
+<li>(Optional) Update user progress (if authenticated).</li>
+</ol>
+</li>
+<li><strong>Output:</strong> <code>{success: true}</code></li>
+</ul>
+</li>
+</ul>
+<h4 id="database-schema-example"><strong>Database Schema (Example):</strong></h4>
+<pre><code class="language-sql"><span class="hljs-comment">-- Topics table (structured topics)</span>
+<span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> topics (
+  topic_id <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">36</span>) <span class="hljs-keyword">PRIMARY</span> KEY,
+  name TEXT <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span>,
+  subtopics JSON,  <span class="hljs-comment">-- e.g., [&quot;Basics&quot;, &quot;Advanced&quot;]</span>
+  difficulty <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">20</span>), <span class="hljs-comment">-- &quot;Beginner&quot;, &quot;Intermediate&quot;, &quot;Advanced&quot;</span>
+  tags TEXT[],
+  created_at <span class="hljs-type">TIMESTAMP</span> <span class="hljs-keyword">DEFAULT</span> NOW()
+);
+
+<span class="hljs-comment">-- Sessions table</span>
+<span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> sessions (
+  session_id <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">36</span>) <span class="hljs-keyword">PRIMARY</span> KEY,
+  user_id <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">36</span>), <span class="hljs-comment">-- NULL if anonymous</span>
+  topic_id <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">36</span>) <span class="hljs-keyword">REFERENCES</span> topics(topic_id),
+  mode <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">10</span>), <span class="hljs-comment">-- &quot;interview&quot; or &quot;learn&quot;</span>
+  status <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">20</span>), <span class="hljs-comment">-- &quot;active&quot;, &quot;completed&quot;</span>
+  started_at <span class="hljs-type">TIMESTAMP</span> <span class="hljs-keyword">DEFAULT</span> NOW(),
+  ended_at <span class="hljs-type">TIMESTAMP</span>,
+  duration_minutes <span class="hljs-type">INTEGER</span>,
+  feedback JSON, <span class="hljs-comment">-- Only for interview mode</span>
+  scores JSON <span class="hljs-comment">-- Only for interview mode</span>
+);
+
+<span class="hljs-comment">-- Chat messages (for Learn mode or Interview Q&amp;A)</span>
+<span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> chat_messages (
+  message_id <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">36</span>) <span class="hljs-keyword">PRIMARY</span> KEY,
+  session_id <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">36</span>) <span class="hljs-keyword">REFERENCES</span> sessions(session_id),
+  sender <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">20</span>), <span class="hljs-comment">-- &quot;user&quot; or &quot;ai&quot;</span>
+  content TEXT,
+  <span class="hljs-type">timestamp</span> <span class="hljs-type">TIMESTAMP</span> <span class="hljs-keyword">DEFAULT</span> NOW()
+);
+</code></pre>
+<hr>
+<h3 id="step-5-repeat"><strong>Step 5: Repeat</strong></h3>
+<ul>
+<li>Frontend shows: <em>&quot;Session complete! Start a new session?&quot;</em> with a &quot;New Topic&quot; button.</li>
+<li>Backend resets state (or user refreshes page).</li>
+</ul>
+<hr>
+<h2 id="4-data-flow-diagram-text-representation"><strong>4. Data Flow Diagram (Text Representation)</strong></h2>
+<pre><code>User
+  │
+  ▼
+[Frontend UI]
+  │
+  ├─► Topic Selection ─────────────────────────────────► Backend ─────────────────────────────► LLM API
+  │       (Raw text)                                      (Structured topic)               (Topic conversion)
+  │
+  ├─► Mode Selection ───────────────────────────────────► Backend
+  │
+  ▼
+[Chat Interface]
+  │
+  ├─► Interview Mode ──────────────────────────────────► Backend ─────────────────────────────► LLM API
+  │       (User answers)                                  (Questions/Feedback)               (Q&amp;A generation)
+  │
+  ├─► Learn Mode ───────────────────────────────────────► Backend ─────────────────────────────► LLM API
+  │       (User messages)                                (AI responses)                    (Explanations)
+  │
+  ▼
+[Session End]
+  │
+  └─► Backend ─────────────────────────────────────────► Database
+          (Logs session data)
+</code></pre>
+<hr>
+<h2 id="5-api-endpoints-summary"><strong>5. API Endpoints Summary</strong></h2>
+<table>
+<thead>
+<tr>
+<th><strong>Endpoint</strong></th>
+<th><strong>Method</strong></th>
+<th><strong>Purpose</strong></th>
+<th><strong>Request Body</strong></th>
+<th><strong>Response</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/api/topics/process</code></td>
+<td>POST</td>
+<td>Convert raw topic to structured format</td>
+<td><code>{text: &quot;Python decorators&quot;}</code></td>
+<td><code>{topic_id: &quot;123&quot;, ...}</code></td>
+</tr>
+<tr>
+<td><code>/api/sessions/start</code></td>
+<td>POST</td>
+<td>Start a new session</td>
+<td><code>{topic_id: &quot;123&quot;, mode: &quot;interview&quot;}</code></td>
+<td><code>{session_id: &quot;456&quot;, ...}</code></td>
+</tr>
+<tr>
+<td><code>/api/sessions/{id}/next_question</code></td>
+<td>POST</td>
+<td>Get next question (Interview mode)</td>
+<td><code>{session_id: &quot;456&quot;, user_answer: &quot;...&quot;}</code></td>
+<td><code>{question: &quot;...&quot;, ...}</code></td>
+</tr>
+<tr>
+<td><code>/api/sessions/{id}/chat</code></td>
+<td>POST</td>
+<td>Send/receive chat messages (Learn mode)</td>
+<td><code>{session_id: &quot;456&quot;, user_message: &quot;...&quot;}</code></td>
+<td><code>{response: &quot;...&quot;}</code></td>
+</tr>
+<tr>
+<td><code>/api/sessions/{id}/end</code></td>
+<td>POST</td>
+<td>End session and log data</td>
+<td><code>{session_id: &quot;456&quot;}</code></td>
+<td><code>{feedback: {...}, ...}</code></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="6-edge-cases--considerations"><strong>6. Edge Cases &amp; Considerations</strong></h2>
+<table>
+<thead>
+<tr>
+<th><strong>Scenario</strong></th>
+<th><strong>Handling</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LLM API fails</td>
+<td>Retry 2x; if fails, show error: &quot;AI service unavailable. Try again later.&quot;</td>
+</tr>
+<tr>
+<td>User ends session mid-Interview</td>
+<td>Log partial session; generate feedback for completed questions.</td>
+</tr>
+<tr>
+<td>Topic is too vague</td>
+<td>Backend asks: &quot;Be more specific (e.g., 'Python decorators for logging').&quot;</td>
+</tr>
+<tr>
+<td>User refreshes during session</td>
+<td>Frontend prompts: &quot;Session in progress. Resume?&quot; (or discard if inactive).</td>
+</tr>
+<tr>
+<td>Anonymous vs. Authenticated users</td>
+<td>If anonymous, store sessions in DB with <code>user_id: NULL</code>.</td>
+</tr>
+<tr>
+<td>Rate limits on LLM API</td>
+<td>Cache structured topics; batch questions for Interview mode.</td>
+</tr>
+<tr>
+<td>Performance assessment accuracy</td>
+<td>Use rubric-based scoring (e.g., &quot;Did user mention closures?&quot;).</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="7-what-to-code-next"><strong>7. What to Code Next</strong></h2>
+<h3 id="frontend-prioritize"><strong>Frontend (Prioritize):</strong></h3>
+<ol>
+<li><strong>Topic Selection Page:</strong>
+<ul>
+<li>Searchable topic list + input field.</li>
+<li>Call <code>/api/topics/process</code> on submit.</li>
+</ul>
+</li>
+<li><strong>Mode Selection Page:</strong>
+<ul>
+<li>Two buttons (&quot;Interview&quot; / &quot;Learn&quot;) → call <code>/api/sessions/start</code>.</li>
+</ul>
+</li>
+<li><strong>Chat Interface:</strong>
+<ul>
+<li>Reusable component for both modes.</li>
+<li>For <strong>Interview Mode</strong>:
+<ul>
+<li>Display questions, handle answers, show feedback.</li>
+</ul>
+</li>
+<li>For <strong>Learn Mode</strong>:
+<ul>
+<li>Free-form chat with AI.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>Session End Screen:</strong>
+<ul>
+<li>Show feedback (Interview) or summary (Learn).</li>
+<li>&quot;New Session&quot; button.</li>
+</ul>
+</li>
+</ol>
+<h3 id="backend-5"><strong>Backend:</strong></h3>
+<ol>
+<li><strong>Topic Processing:</strong>
+<ul>
+<li>Endpoint <code>/api/topics/process</code> + LLM API integration.</li>
+</ul>
+</li>
+<li><strong>Session Management:</strong>
+<ul>
+<li>Endpoints <code>/api/sessions/start</code>, <code>/api/sessions/{id}/next_question</code>, <code>/api/sessions/{id}/end</code>.</li>
+</ul>
+</li>
+<li><strong>Chat Logic:</strong>
+<ul>
+<li>Endpoint <code>/api/sessions/{id}/chat</code> for Learn mode.</li>
+</ul>
+</li>
+<li><strong>Database:</strong>
+<ul>
+<li>Set up <code>topics</code>, <code>sessions</code>, and <code>chat_messages</code> tables.</li>
+<li>Implement session logging.</li>
+</ul>
+</li>
+</ol>
+<h3 id="llm-integration-1"><strong>LLM Integration:</strong></h3>
+<ol>
+<li><strong>Prompt Engineering:</strong>
+<ul>
+<li>Design prompts for question generation, feedback, and explanations.</li>
+</ul>
+</li>
+<li><strong>Error Handling:</strong>
+<ul>
+<li>Retry failed API calls; fallback responses.</li>
+</ul>
+</li>
+</ol>
+<h3 id="optional-later"><strong>Optional (Later):</strong></h3>
+<ul>
+<li>User authentication (e.g., Firebase Auth).</li>
+<li>Progress dashboard (visualize logged sessions).</li>
+<li>Topic recommendations (e.g., &quot;You struggled with decorators. Try closures next!&quot;).</li>
+</ul>
+<hr>
+<h2 id="8-example-user-journey"><strong>8. Example User Journey</strong></h2>
+<ol>
+<li><strong>User opens app</strong> → Sees &quot;Enter a topic to learn&quot; input.</li>
+<li><strong>Types:</strong> &quot;How do Python decorators work?&quot; → Backend converts to structured topic.</li>
+<li><strong>Selects &quot;Interview Mode&quot;</strong> → Backend starts session.</li>
+<li><strong>Q1:</strong> &quot;What is a decorator?&quot; → User answers.</li>
+<li><strong>Q2:</strong> &quot;How does the @ syntax work?&quot; → User answers.</li>
+<li><strong>After 5 questions</strong>, backend generates feedback:<pre><code>Score: Accuracy 8/10, Clarity 7/10
+Strengths: Good understanding of basics.
+Improvements: Explain closures in decorators.
+</code></pre>
+</li>
+<li><strong>Session logged</strong> → User sees &quot;New Session&quot; button.</li>
+</ol>
+<hr>
+<h2 id="9-toolstechnologies-suggested"><strong>9. Tools/Technologies Suggested</strong></h2>
+<table>
+<thead>
+<tr>
+<th><strong>Component</strong></th>
+<th><strong>Tech Options</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Frontend</td>
+<td>React.js, Next.js, or Vue.js</td>
+</tr>
+<tr>
+<td>Backend</td>
+<td>Node.js (Express), Python (FastAPI), or Go</td>
+</tr>
+<tr>
+<td>Database</td>
+<td>PostgreSQL (structured data) or Firebase</td>
+</tr>
+<tr>
+<td>LLM API</td>
+<td>OpenAI (GPT-4), Anthropic (Claude), or local LLM (e.g., Llama)</td>
+</tr>
+<tr>
+<td>Authentication</td>
+<td>Firebase Auth, Auth0, or JWT</td>
+</tr>
+<tr>
+<td>Hosting</td>
+<td>Vercel (frontend), Render/AWS (backend)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="10-next-steps-for-you"><strong>10. Next Steps for You</strong></h2>
+<ol>
+<li><strong>Validate the workflow</strong> with a quick prototype (e.g., build the topic selection + Interview mode flow first).</li>
+<li><strong>Design UI mockups</strong> for key screens (Figma/Excalidraw).</li>
+<li><strong>Set up the backend</strong> with the core endpoints.</li>
+<li><strong>Integrate LLM API</strong> (start with a free tier like OpenAI’s).</li>
+<li><strong>Build the chat interface</strong> (reusable for both modes).</li>
+<li><strong>Add session logging</strong> and database.</li>
+</ol>
+<p>Would you like me to:</p>
+<ul>
+<li>Draft a <strong>Figma wireframe</strong> for the UI?</li>
+<li>Provide <strong>code snippets</strong> for a specific part (e.g., backend endpoint for topic processing)?</li>
+<li>Dive deeper into <strong>database queries</strong> or <strong>LLM prompt templates</strong>?</li>
+</ul>
+
+            
+            
+        </body>
+        </html>

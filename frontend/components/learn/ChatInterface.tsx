@@ -14,8 +14,10 @@ import TopicSelector from "./SuggestedTopics";
 import ModeSelector from "./ModeSelect";
 import ScoreCard from "./score";
 import { API_BASE_URL } from "@/lib/config";
+import ReactMarkdown from "react-markdown";
 
-const INTERVIEW_MESSAGE_LIMIT = 5;
+const INTERVIEW_MESSAGE_LIMIT = 2;
+const LEARN_MESSAGE_LIMIT = 3;
 
 const iconMap = {
   "system-design": Globe,
@@ -37,6 +39,8 @@ export default function ChatInterface({ subject }: { subject: SubjectConfig }) {
   const [error, setError] = useState<string | null>(null);
   const [aiMessageCount, setAiMessageCount] = useState(0);
   const [score, setScore] = useState<Feedback | null>(null);
+  const [sessionComplete, setSessionComplete] = useState(false);
+  const [finalSummary, setFinalSummary] = useState<string | null>(null);
 
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -49,6 +53,47 @@ export default function ChatInterface({ subject }: { subject: SubjectConfig }) {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
+  // ─── Get initial assistant message ───────────────────────────────────────
+
+  const getInitialAssistantText = (t: Topic, m: Mode): string => {
+    if (m === "learn") {
+      return `What would you like to learn about ${t.title}?`;
+    } else {
+      return `Let's start your interview on ${t.title}. Are you ready?`;
+    }
+  };
+
+  // ─── Log session ──────────────────────────────────────────────────────────
+
+  const handleLogSessionAndRestart = async () => {
+    if (!topic || !mode) return;
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/chat/log-session`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          subject: subject.id,
+          topic_id: topic.id,
+          topic_label: topic.title,
+          mode,
+          messages,
+          ai_message_count: aiMessageCount,
+          score,
+          summary: finalSummary,
+        }),
+      });
+
+      if (!res.ok) {
+        console.error("Failed to log session");
+      }
+    } catch (err) {
+      console.error("Error logging session:", err);
+    } finally {
+      handleRestart();
+    }
+  };
+
   // ─── Navigation handlers ──────────────────────────────────────────────────
 
   const handleTopicSelect = (t: Topic) => {
@@ -59,6 +104,10 @@ export default function ChatInterface({ subject }: { subject: SubjectConfig }) {
   const handleModeSelect = (m: Mode) => {
     setMode(m);
     setPhase("chatting");
+        if (topic) {
+      const initialAssistantText = getInitialAssistantText(topic, m);
+      setMessages([{ role: "assistant", content: initialAssistantText }]);
+    }
   };
 
   const handleRestart = () => {
@@ -69,6 +118,8 @@ export default function ChatInterface({ subject }: { subject: SubjectConfig }) {
     setAiMessageCount(0);
     setScore(null);
     setError(null);
+    setSessionComplete(false);
+    setFinalSummary(null);
   };
 
   // ─── Send message ─────────────────────────────────────────────────────────
@@ -111,6 +162,12 @@ export default function ChatInterface({ subject }: { subject: SubjectConfig }) {
 
     if (!topic || !mode) return;
 
+    const activeLimit = mode === "interview" ? INTERVIEW_MESSAGE_LIMIT : LEARN_MESSAGE_LIMIT;
+    if (aiMessageCount >= activeLimit) {
+      setError("Message limit reached for this mode.");
+      return;
+    }
+
     const newMessages: ChatMessage[] = [...messages, { role: "user", content }];
     setMessages(newMessages);
     setInput("");
@@ -118,7 +175,7 @@ export default function ChatInterface({ subject }: { subject: SubjectConfig }) {
     setError(null);
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/chat/interview`, {
+      const res = await fetch(`${API_BASE_URL}/api/chat/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -146,11 +203,58 @@ export default function ChatInterface({ subject }: { subject: SubjectConfig }) {
       ]);
       setAiMessageCount(newCount);
 
+      const sessionEnded = newCount >= currentMessageLimit;
+      if (sessionEnded) {
+        // Fetch session summary from backend
+        try {
+          const summaryRes = await fetch(`${API_BASE_URL}/api/chat/summary`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              subject: subject.id,
+              topic_id: topic.id,
+              topic_label: topic.title,
+              mode,
+              message: content,
+              history: [...messages, { role: "assistant", content: data.reply }],
+              ai_message_count: newCount,
+            }),
+          });
+
+          let summary = "Your session has finished.";
+          let summaryData: { score?: Feedback; summary?: string; feedback?: string } | null = null;
+          if (summaryRes.ok) {
+            summaryData = await summaryRes.json();
+            summary = summaryData?.summary || summary;
+          }
+
+          if (mode === "interview" && summaryData && summaryData.score) {
+            setScore(summaryData.score);
+            setSessionComplete(true);
+            setFinalSummary(summaryData.feedback || summary);
+            setPhase("review");
+          } else {
+            setSessionComplete(true);
+            setFinalSummary(summary);
+          }
+        } catch (err) {
+          console.error("Error fetching summary:", err);
+          setSessionComplete(true);
+          setFinalSummary("Your session has finished.");
+        }
+      }
+
       if (data.score) {
         setScore(data.score);
-        setPhase("review");
+        if (sessionEnded) {
+          setPhase("review");
+        }
       }
-    } finally {
+    } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Failed to process topic",
+        )
+      }finally {
       setLoading(false);
       inputRef.current?.focus();
     }
@@ -163,8 +267,14 @@ export default function ChatInterface({ subject }: { subject: SubjectConfig }) {
     }
   };
 
+  const currentMessageLimit =
+    mode === "interview" ? INTERVIEW_MESSAGE_LIMIT : LEARN_MESSAGE_LIMIT;
+
   const isFinalMessage =
-    mode === "interview" && aiMessageCount >= INTERVIEW_MESSAGE_LIMIT - 1;
+    mode != null && aiMessageCount >= currentMessageLimit - 1;
+
+  const messagesLeft =
+    mode != null ? Math.max(currentMessageLimit - aiMessageCount, 0) : null;
 
   // ─── Render ───────────────────────────────────────────────────────────────
 
@@ -204,14 +314,16 @@ export default function ChatInterface({ subject }: { subject: SubjectConfig }) {
           </div>
         </div>
 
-        {/* Interview progress */}
-        {mode === "interview" && phase === "chatting" && (
+        {/* Chat progress */}
+        {mode && phase === "chatting" && (
           <div className="flex items-center gap-2">
             <span className="text-xs text-gray-400">
-              {aiMessageCount}/{INTERVIEW_MESSAGE_LIMIT}
+              {messagesLeft !== null
+                ? `${messagesLeft} messages left`
+                : `${aiMessageCount}/${currentMessageLimit}`}
             </span>
             <div className="flex gap-1">
-              {Array.from({ length: INTERVIEW_MESSAGE_LIMIT }).map((_, i) => (
+              {Array.from({ length: currentMessageLimit }).map((_, i) => (
                 <div
                   key={i}
                   className={`w-2 h-2 rounded-full transition-colors ${
@@ -258,29 +370,31 @@ export default function ChatInterface({ subject }: { subject: SubjectConfig }) {
         {/* Chat */}
         {phase === "chatting" && (
           <div className="space-y-4 max-w-2xl mx-auto">
-            {messages.length === 0 && (
-              <div className="text-center py-8 text-sm text-gray-400">
-                {mode === "learn"
-                  ? "Start by explaining what you already know about this topic."
-                  : "I'll give you a problem to design. Type anything to begin."}
-              </div>
-            )}
-            {messages.map((msg, i) => (
-              <div
-                key={i}
-                className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-              >
+            {messages.map((msg, i) => {
+              const isLastAssistantMessage = msg.role === "assistant" && i === messages.length - 1 && sessionComplete;
+              return (
                 <div
-                  className={`max-w-2xl px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${
-                    msg.role === "user"
-                      ? "bg-indigo-600 text-white rounded-br-sm"
-                      : "bg-white border border-gray-100 text-gray-800 rounded-bl-sm"
-                  }`}
+                  key={i}
+                  className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                 >
-                  {msg.content}
+                  <div
+                    className={`max-w-2xl px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${
+                      msg.role === "user"
+                        ? "bg-indigo-600 text-white rounded-br-sm"
+                        : isLastAssistantMessage
+                        ? "bg-indigo-50 border border-indigo-200 text-gray-800 rounded-bl-sm"
+                        : "bg-white border border-gray-100 text-gray-800 rounded-bl-sm"
+                    }`}
+                  >
+                    {msg.role === "assistant" ? (
+                      <ReactMarkdown>{msg.content}</ReactMarkdown>
+                    ) : (
+                      msg.content
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
             {loading && (
               <div className="flex justify-start">
                 <div className="bg-white border border-gray-100 px-4 py-3 rounded-2xl rounded-bl-sm text-sm text-gray-400">
@@ -291,6 +405,17 @@ export default function ChatInterface({ subject }: { subject: SubjectConfig }) {
             {error && (
               <p className="text-xs text-red-400 text-center">{error}</p>
             )}
+
+            {/* Recap box shown after session complete */}
+            {sessionComplete && finalSummary && (
+              <div className="mt-6 pt-6 border-t border-gray-200">
+                <div className="bg-indigo-50 border border-indigo-200 rounded-2xl px-4 py-3 text-sm text-gray-800 leading-relaxed">
+                  <p className="font-semibold text-indigo-900 mb-2">Session Summary</p>
+                  <ReactMarkdown>{finalSummary}</ReactMarkdown>
+                </div>
+              </div>
+            )}
+
             <div ref={bottomRef} />
           </div>
         )}
@@ -310,14 +435,52 @@ export default function ChatInterface({ subject }: { subject: SubjectConfig }) {
         )}
       </div>
 
-      {/* Input bar — only visible during chat */}
-      {(phase === "chatting" || phase === "topic-select") && (
+      {/* Input bar — only visible during chat and not complete */}
+      {phase === "chatting" && !sessionComplete && (
         <div className="shrink-0 px-8 py-4 border-t border-gray-100 bg-white">
-          {isFinalMessage && (
+          {isFinalMessage && !sessionComplete && (
             <p className="text-xs text-amber-500 text-center mb-2">
-              This is your last response — the interview will end after this.
+              This is your last response — the session will end after this.
             </p>
           )}
+          <div className="flex items-center gap-3 bg-gray-50 rounded-2xl px-4 py-2.5 max-w-2xl mx-auto">
+            <input
+              ref={inputRef}
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKey}
+              placeholder={"Type your message here..."}
+              className="flex-1 text-sm bg-transparent outline-none placeholder-gray-400 text-gray-800"
+              disabled={sessionComplete}
+            />
+            <button
+              onClick={() => sendMessage()}
+              disabled={!input.trim() || loading || sessionComplete}
+              className="w-8 h-8 flex items-center justify-center rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-40 transition-colors"
+            >
+              <Send className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Save recap button — only visible when session complete */}
+      {phase === "chatting" && sessionComplete && (
+        <div className="shrink-0 px-8 py-4 border-t border-gray-100 bg-white">
+          <button
+            onClick={handleLogSessionAndRestart}
+            className="w-full max-w-2xl mx-auto flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors"
+          >
+            <Sparkles className="w-4 h-4" />
+            Save recap + start over
+          </button>
+        </div>
+      )}
+
+      {/* Topic select input bar */}
+      {phase === "topic-select" && (
+        <div className="shrink-0 px-8 py-4 border-t border-gray-100 bg-white">
           <div className="flex items-center gap-3 bg-gray-50 rounded-2xl px-4 py-2.5 max-w-2xl mx-auto">
             <input
               ref={inputRef}

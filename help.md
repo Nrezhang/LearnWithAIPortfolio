@@ -372,7 +372,8 @@ User
 5. **Build the chat interface** (reusable for both modes).
 6. **Add session logging** and database.
 
-Would you like me to:
-- Draft a **Figma wireframe** for the UI?
-- Provide **code snippets** for a specific part (e.g., backend endpoint for topic processing)?
-- Dive deeper into **database queries** or **LLM prompt templates**?
+[ ]TODO: Implement redis for message history
+Frontend → send message only
+Backend → fetch history from Redis
+Backend → append message
+Backend → store updated history

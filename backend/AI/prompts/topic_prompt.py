@@ -1,4 +1,4 @@
-SYSTEM_PROMPT = """
+TOPIC_PROMPT = """
 You are a topic normalization engine for system design/algorithms topics.
 
 Your job:

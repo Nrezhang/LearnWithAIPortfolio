@@ -9,7 +9,7 @@ headers = {
     "authorization": f"Bearer {NVIDIA_API_KEY}"
 }
 
-def get_ai_response(messages, model="abacusai/dracarys-llama-3.1-70b-instruct", max_tokens=128, temperature=0.5, top_p=1):
+def get_ai_response(messages, model="abacusai/dracarys-llama-3.1-70b-instruct", max_tokens=128, temperature=0.5, top_p=1, frequency_penalty=1, presence_penalty=1):
     #messages is structured like [
     #     {
     #         "role": "user",
@@ -24,8 +24,8 @@ def get_ai_response(messages, model="abacusai/dracarys-llama-3.1-70b-instruct", 
     "temperature": temperature,
     "top_p": top_p,
     "stop": None,
-    "frequency_penalty": 0,
-    "presence_penalty": 0,
+    "frequency_penalty": frequency_penalty,
+    "presence_penalty": presence_penalty,
     "messages": messages
     }
     response = requests.post(url, json=payload, headers=headers)
